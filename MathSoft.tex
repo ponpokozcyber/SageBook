@@ -1,0 +1,267 @@
+\section{Computerは電脳ではありません}
+
+Computerは電脳ではありません. あくまでも計算機です. 事実, 夢を見る訳でも
+なくやっていることは計算です. 動作原理からSLを「蒸気機関車」と訳していますが,
+ 火を使っている事実から「火車」としてしまっては無意味なことと同様に
+「Computer」は「電脳」ではあり得ない\footnote{幕末から明治にかけて日本の
+近代化が他の大清帝国やオスマン帝国で行われた近代化と大きく異なった理由の一つ
+だと私は思っています. これらの帝国では単純なる技術や工場の導入に留まった傾向
+が強く, お金に物を言わせた武器の購入で強国としての面目をなんとか保っていますが,
+ 肝心の近代化は見事に失敗しています. その一方で日本の近代化では根底にある普遍的
+な原理, 原則への視点があり, だからこそ近代化が可能であったと思う次第です. その
+意味で「電脳」は言葉の遊びですらありません!}のです! そして「\textbf{計算機}」
+だからこそ数学の計算をすべきなのです! 
+
+\section{数学ソフトあれこれ}
+
+数学ソフトと一言で括っても広範囲です. 実際, 「計算処理」を数学に含めると非常
+に多くのソフトウェアが数学ソフトの範疇に入り込む可能性があるからです. だから
+ここでは以下の分類で話を進めます:
+
+\vspace{0.2cm}
+\begin{itembox}[c]{数学ソフト}
+\begin{itemize}
+\item{数値行列計算}
+\item{数式処理}
+\item{統計処理}
+\item{動的幾何学}
+\item{証明支援}
+\item{可視化}
+\end{itemize}
+\end{itembox}
+
+\paragraph{数値行列計算:} 数値計は数値行列の処理で置き換えて処理することが
+多く,計算機の能力の問題もあって少し前までは「数学ソフト=数値行列ソフト」でした.
+ その時点ではFORTRANの行列計算ライブラリBLASやLAPACKを利用してプログラムを
+書いていましたが, 教育向けにMATLABが開発されて一般に公開され, さらにその商用化
+に成功したために数値行列処理ソフトはMATLAB流儀のものが殆どです. 例外は統計処理
+の教育でLISPSTATが用いられたことでLISPの影響が強いことです. とはいえ数値行列
+処理でのMATLABの影響は絶大で, MATLABの行列処理の流儀を知っていれば困ることは
+ないでしょう. なお, CとFORTRANで二次元配列のメモリ上の配置が異なるために
+メモリ上連続するのが行か列かの違いが生じることがあります. これは一次元のベクトル
+を生成したときに行ベクトル, あるいは列ベクトルになるといった違いですが, プログラム
+の移植でこのことに起因するバグは判り難いので注意しましょう.
+
+\vspace{0.5cm}
+{\footnotesize
+\begin{tabularx}{7cm}{l X}
+\multicolumn{2}{c}{おすすめ}\\\hline
+Yoricik& C風, 軽量・高速. 高次元の配列処理が可.\\
+Octave& GNUのMATLABクローン. Androidでも利用可能.\\
+Scilab& 高機能でSimulink風のGUIもある優等生.\\\hline
+\end{tabularx}
+}
+\vspace{0.5cm}
+
+\paragraph{数式処理:} 長い歴史を持ち, 当初は人工知能との関連で研究されて
+いました. 実際, MITのProject MACで開発されたMacsyma\footnote{現在はOSS化
+されてMaxima.}の開発と同時にMacLispも一緒に開発されたり, Macsymaには文脈と
+いった面白い機構が実装されています. 現在は人工知能ではなく代数的構造(Groebner
+基底による計算機代数)を基に処理しています. 数式処理はその性格上, 計算機の能力,
+ メモリ等の環境を贅沢に使い,数式そのものを処理する特性から他のソフトウェアを
+統合した万能ツールになる傾向があります. たとえばWolframの
+\textit{Mathematica}の宣伝も, それだけで何でもできるツールです. しかし,
+ 数値計算や統計処理で中規模以上の処理になると実用に耐えないことがあります.
+ これは任意精度で数値演算の処理が決定的に遅くなります. ただし, Sageのように
+数式処理と数値行列計算双方の長所を生かすシステムも現れています.
+
+\vspace{0.5cm}
+{\footnotesize
+\begin{tabularx}{7cm}{l X}
+\multicolumn{2}{c}{おすすめ}\\\hline
+REDUCE& 古参の数式処理. Androidでも使える.\\
+Maxima& 古参の数式処理. Androidでも使える.\\
+Sage&   統合数学環境. なんでもあり.\\\hline
+\end{tabularx}
+}
+\vspace{0.5cm}
+
+\paragraph{統計処理:} 統計処理を専門に行うソフトウェアで, 教育目的で
+LISPSTATが広く用いられたためかLISPをベースにしたシステムが多いのが特徴
+です. ただし, 現在はGNU Rに収斂しています\footnote{共立出版:21世紀の
+数学「統計学」の初版はLISPSTATを使っていましたが二版以降はGNU Rです.}.
+ 日本語の情報はRjpWiki[RJ]から得られます.
+
+\vspace{0.5cm}
+{\footnotesize
+\begin{tabularx}{7cm}{l X}
+\multicolumn{2}{c}{おすすめ}\\\hline
+GNU R& 現在の主流. これで決まり.\\\hline
+\end{tabularx}
+}
+\vspace{0.5cm}
+
+\paragraph{動的幾何学:} 画面上で幾何図形を描いて処理を行うソフトウェア
+です. 比較的新しい分野のソフトウェアで教育分野で注目を浴び始めています.
+ 日本での認知度はいま一つですがGeoGebra
+ \footnote{GeoGebra=\underline{Geo}metry+al\underline{Gebra}}
+は特に優れています. 他にKSEGやCinderella(商用)と云った優れた
+アプリケーションがあります.
+
+
+\vspace{0.5cm}
+{\footnotesize
+\begin{tabularx}{7cm}{l X}
+\multicolumn{2}{c}{おすすめ}\\\hline
+KSEG& そこそこ高機能. 直観的な描画が行える.\\
+GeoGebra&  数式処理を包含する等, 高機能. 活発な開発とユーザー会活動.\\\hline
+\end{tabularx}
+}
+\vspace{0.5cm}
+
+\paragraph{証明支援:} いわゆるHilbert計画を実行するためのソフトウェアと
+いえます. OCamlで記述されたCoq, Haskellで記述されたAgdaが著名です.
+
+\vspace{0.5cm}
+{\footnotesize
+\begin{tabularx}{7cm}{l X}
+\multicolumn{2}{c}{おすすめ}\\\hline
+Coq& 書籍や情報がそろっています.\\\hline
+\end{tabularx}
+}
+\vspace{0.5cm}
+
+\paragraph{可視化:} 可視化ソフトは多岐にわたり, 単機能的なものはそれこそ山
+のようにあります. 数値計算の可視化ではParaview\footnote{流体解析ソフト
+OpenFoamの標準可視化ツールです.}やIBMのOpenDXは多機能で優れたソフトです.
+ その他に代数曲面の可視化ではSURFERといったものがあります.
+
+\vspace{0.5cm}
+{\footnotesize
+\begin{tabularx}{8cm}{l X}
+\multicolumn{2}{c}{おすすめ}\\\hline
+Paraview& 高機能. 情報がそろっています.\\
+OpenDX& AVSみたいで高機能.\\
+SURFER& 三変数の多項式から代数曲面を描画.\\\hline
+\end{tabularx}
+}
+\vspace{0.5cm}
+
+\section{カタログとしてのMathLibre}
+
+斯くも多くのソフトウェアが娑婆にあるのです. ではソフトウェアをどうやって見つ
+けるのか? 安易な方法はリポジトリ\footnote{この点はWindowsもMacも全くダメ
+でLinuxが圧倒的に優れていることを嫌でも実感できます.}から面白そうな
+ソフトウェアを片っ端から入れる方法ですが暇人や調査が趣味/仕事の方にしか勧め
+られません. それでは? お勧めはMathLibreを使うことです.
+\newline
+
+MathLibreはDebian Liveを利用した1-DVDで起動可能なLinuxですがUSBメモリ
+にインストールしてそこから起動させるといったこも可能で, 数学ソフトウェアと
+関連する日本語文書を収録したLinuxの一種類です. このMathLibreには数学屋
+さんが必要とするアプリケーション: 純粋な数学のソフト, LibreOfficeのような
+オフィスものと{\LaTeX}環境,  Emacsのようなエディタ等々と有用な
+アプリケーションのショーケースと言える程です. おまけに現在のPCはマルチコア
+なので仮想計算機でMathLibreを動かして, そこから自分に見合ったソフトウェア
+を探せばよいでしょう. またMathLibre\cite{MathLibre}のwikiも様々な情報
+があり非常に有益です.
+
+
+\section{Sage!, そうSage}
+
+数式処理で触れたSageはOSSのMATLAB, \textit{Mathematica}を目指し, その
+目的を達成する手段として既存のOSSのアプリケーション等をPythonで繋ぎあわせた
+巨大なシステムです. だからこそSageを使いこなすためにはPythonという言語に通じて
+おく必要があります. また, SageはUNIX環境のみでしか動作しません
+\footnote{OSXでもEl CapitanのRootless騒動のために動作しなくなっています.
+ SIPの解除すれば間違いなく動きます.}. そのためにWindows向けには仮想計算機環境
+を配布するという恐しい方法が採用されています.
+\newline
+
+ここで不幸にして仮想計算機を導入できない環境に喘ぐ方々もいらっしゃることでしょう.
+ 今や天国の門は開かれたのです! SageMathCloudを使うのです!
+\newline
+
+SageMathCloud(SMC)は最初に利用者登録が必要です. それだけで迷える子羊であった
+貴方は3GBのディスクスペースと1GBのメモリ, 1 coreのCPUを無料で使えるのです.
+ もちろんお金があればより多くのcoreを占有することが可能になるでしょう. 必要なら
+財布と相談してください. さらにこのSMCが素晴らしいのはSageの実行環境に留まらず,
+ Jupyter notebookを利用した{\LaTeX}, reSTやMarkdownの文書作成環境,
+ Python, GNU R, Jullia, Bash等が好きに動かせるという点です. その上, SMCは
+スマートフォンからでも利用ができるという, 我等のために花嫁の様に着飾って天から
+降りてきた新エルサレムであり極楽浄土なのです. 
+\newline
+
+見よ! SMC上での代数曲面の表示を! これはiPhone6 PlusでSMCに接続し,
+ハート状の曲面を描画させただけではなく, その曲面を直接指でグリグリと
+回しているのです. 神の御名は誉むべき哉!
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=4cm]{SMCforIPhone6Plus.pdf}
+\caption{iPhone6 PlusでSMC}
+\label{fig:smc4iphone}
+\end{center}
+\end{figure}
+
+SMCで以下を入力すると何が出るかな?
+
+\begin{lstlisting}[caption=みんなで入れようクマー,
+frame=tlRB,numberstyle=\footnotesize,basicstyle=\footnotesize]
+var('x,y,z')
+implicit_plot3d(((x+5/3)^2+(y+1)^2
++(z-3)^2-1/4)*(x^2+y^2+(z-2)^2-1/4)
+*((x+5/3)^2+(y-1)^2+(z-3)^2-1/4)
+*((x+1)^2+y^2+(z-2)^2-1)
+*((2*x^2+y^2+z^2-1)^3
+-(1/10)*x^2*z^3-y^2*z^3)==0, 
+[x,-2,2],[y,-3,2],[z,-2,5],plot_points=50)
+\end{lstlisting}
+
+もちろん{\LaTeX}だって... そう, {\LaTeX}だって....
+\newline
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=7cm]{SMC_TeX_iphone.pdf}
+\caption{iPhone6 Plusで{\LaTeX}}
+\label{fig:smctex}
+\end{center}
+\end{figure}
+
+ソフトウェアキーボードが出ていると狭さが際立ちますが十分に実用的です.
+ Bluetoothキーボードがあれば問題ありません. 
+
+\begin{thebibliography}{99}
+\bibitem{Coq}
+Coq,~https://coq.inria.fr/
+\bibitem{GeoGebra}
+GeoGebra,~https://www.geogebra.org/
+\bibitem{KSEG}
+KSEG,
+\newline
+http://www.mit.edu/~ibaran/kseg.html
+\bibitem{MathLibre}
+MathLibre,
+\newline
+http://www.mathlibre.org/index-ja.html
+\bibitem{Octave}
+GNU Octave,
+\newline
+https://www.gnu.org/software/octave/
+\bibitem{OpenDX}
+OpenDX,~http://www.opendx.org/
+\bibitem{ParaView}
+ParaView,~http://www.paraview.org/
+\bibitem{R}
+GNU R,~https://www.r-project.org/
+\bibitem{RJ}
+RjpWiki,~http://www.okada.jp.org/RWiki/
+\bibitem{Maxima}
+Maxima,~http://maxima.sourceforge.net/
+\bibitem{Reduce}
+Reduce,\newline
+http://reduce-algebra.sourceforge.net/
+\bibitem{Sage}
+Sagemath,~http://www.sagemath.org/
+\bibitem{SMC}
+SageMathCloud,\newline
+https://cloud.sagemath.com/
+\bibitem{Scilab}
+Scilab,~http://www.scilab.org/
+\bibitem{IMAGINARY}
+SURFER,\newline
+https://imaginary.org/program/surfer/
+\bibitem{yorick}
+Yorick,~http://yorick.sourceforge.net/
+\end{thebibliography}

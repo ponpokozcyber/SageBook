@@ -1,0 +1,76 @@
+\documentclass[uplatex,b5j,8pt, twocolumn]{jsarticle}
+\usepackage{etex}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{listings}
+\usepackage{tikz} 
+\usepackage{tikz-cd} 
+\usepackage{tikz-qtree} 
+\usepackage{ascmac,amscd,tabularx,begriff, amssymb,makeidx,dashrule,epic,eepic,wrapfig,latexsym,amsmath,listings,textcomp,mathrsfs,bigdelim,
+multirow,accents,ulem}
+\usepackage{pictexwd,dcpic}
+\usepackage[LGR,T1]{fontenc}
+\usepackage[OT2,OT1]{fontenc} \newcommand\cyr
+{
+\renewcommand\rmdefault{wncyr} \renewcommand\sfdefault{wncyss} \renewcommand\encodingdefault{OT2} \normalfont
+\selectfont
+}
+\DeclareTextFontCommand{\textcyr}{\cyr} \def\cprime{\char"7E } \def\cdprime{\char"7F } \def\eoborotnoye{\char’013} \def\Eoborotnoye{\char’003}
+\reserveinserts{28}
+\newcommand{\textgreek}[1]{\begingroup\fontencoding{LGR}\selectfont#1\endgroup}
+\makeatletter
+\def\ruby#1#2{\leavevmode\vbox{%
+\baselineskip\z@skip\lineskip.25ex
+\ialign{##\crcr\rubyfont\hfill#2\hfill\crcr
+\hfill#1\hfill\crcr}}}
+\newcount\gpten % (global) power-of-ten -- tells which digit we are doing
+\countdef\rtot2 % running total -- remainder so far
+\countdef\LDscratch4 % scratch
+\makeatother
+\def\rubyfont{\tiny}
+\renewcommand{\lstlistingname}{リスト}
+\newcommand{\id}{\mathop{\mathrm{id}}\nolimits}
+\usetikzlibrary{calc,decorations.pathmorphing,shapes}
+
+\newcounter{sarrow}
+\newcommand\xrsquigarrow[1]{%
+\stepcounter{sarrow}%
+\mathrel{\begin{tikzpicture}[baseline= {( $ (current bounding box.south) + (0,-0.5ex) $ )}]
+\node[inner sep=.5ex] (\thesarrow) {$\scriptstyle #1$};
+\path[draw,<-,decorate,
+  decoration={zigzag,amplitude=0.7pt,segme11111111111111nt length=1.2mm,pre=lineto,pre length=4pt}] 
+    (\thesarrow.south east) -- (\thesarrow.south west);
+\end{tikzpicture}}%
+}
+
+\title{おんなのこLinux原稿 その2(1版)\\
+{- 数学ソフトいろいろ -}}
+\author{三番街公爵(Marques de Third)}
+\date{
+平成27年11月28日 
+ }
+\makeindex
+\begin{document}
+\maketitle
+
+おんなのこLinux 原稿その2\copyright (2015) 横田 博史著\par
+
+この著作の誤り, 誤植等で生じた損害に対して
+
+著者は一切の責任を負いません．
+
+\newpage
+\setcounter{page}{1}
+
+\include{MathSoft}
+
+\end{document}
+\end
+\end
+
+
+
+
+
+
+
+
