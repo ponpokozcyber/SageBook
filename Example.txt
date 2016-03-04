@@ -1,20 +1,20 @@
-»È¤¤Êý¡§
-¼ÂÎã¤ÇÀâÌÀ
-1. load()¤Çkauffman_bracket.py¤òÆÉ¹þ¤à.
-2. import sqlite3 ¤Çsqlite3¥â¥¸¥å¡¼¥ë¤òÆÉ¹þ¤à
-3. DB¤äÉ½¤¬Ì¤À¸À®¤Ê¤é¤ÐÉ½¤ÎÀ¸À®¤ò¹Ô¤¦. ¤½¤Î¾ì¹ç¤Ï°Ê²¼¤Îcursor¥ª¥Ö¥¸¥§¥¯¥È
-   ¤ÎÀ¸À®¤Ècreate table¤ÇÆó¤Ä¤ÎÉ½¤òÀ¸À®¤·, ºÇ¸å¤Ëcursor.commit()¤ò¼Â¹Ô¤·¤Æ
-   ¤ª¤¯¤³¤È.
-4. ¥¬¥¦¥¹¡¦¥³¡¼¥É¤È¸òº¹ÅÀ¤Ç¤ÎÉä¹æ¤Î¾ðÊó¤òÀ¸À®¤·¤Æ¤ª¤¯. ¥¬¥¦¥¹¡¦¥³¡¼¥É¤Ï
-   Íí¤ßÌÜ¤Î³ÆÀ®Ê¬¤Ç´ðÅÀ¤È¸þ¤­¤òÄê¤á, ¤½¤Î¸þ¤­¤Ë±è¤Ã¤Æ¸òº¹ÅÀ¤ò¾åÆ»¤Ç±Û¤¨¤ë
-   ¾ì¹ç¤ÏÀµ¤ÎÈÖ¹æ, ²¼Æ»¤ÇÄÌ²á¤¹¤ë¾ì¹ç¤ÏÉé¤ÎÈÖ¹æ¤È¤¹¤ë. ¸òº¹ÅÀ¤ÎÉä¹æ¤Ï
-   +1¤Ê¤éÀµ¤ÎÈÖ¹æ, -1¤Ê¤éÉé¤ÎÈÖ¹æ¤ò»ØÄê¤¹¤ë.
-5. Diagram¤Ï¥¬¥¦¥¹¡¦¥³¡¼¥É¤È¸òº¹ÅÀ¾ðÊó¤Ç¹½À®¤µ¤ì¤¿¥ê¥¹¥È¤Ç¤¢¤ë.
-   ¤³¤ì¤é¤¬Â·¤¦¤Ècalc_Kauffman_Bracket()¤Ç·×»».
+ä½¿ã„æ–¹ï¼š
+å®Ÿä¾‹ã§èª¬æ˜Ž
+1. load()ã§kauffman_bracket.pyã‚’èª­è¾¼ã‚€.
+2. import sqlite3 ã§sqlite3ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚’èª­è¾¼ã‚€
+3. DBã‚„è¡¨ãŒæœªç”Ÿæˆãªã‚‰ã°è¡¨ã®ç”Ÿæˆã‚’è¡Œã†. ãã®å ´åˆã¯ä»¥ä¸‹ã®cursorã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+   ã®ç”Ÿæˆã¨create tableã§äºŒã¤ã®è¡¨ã‚’ç”Ÿæˆã—, æœ€å¾Œã«cursor.commit()ã‚’å®Ÿè¡Œã—ã¦
+   ãŠãã“ã¨.
+4. ã‚¬ã‚¦ã‚¹ãƒ»ã‚³ãƒ¼ãƒ‰ã¨äº¤å·®ç‚¹ã§ã®ç¬¦å·ã®æƒ…å ±ã‚’ç”Ÿæˆã—ã¦ãŠã. ã‚¬ã‚¦ã‚¹ãƒ»ã‚³ãƒ¼ãƒ‰ã¯
+   çµ¡ã¿ç›®ã®å„æˆåˆ†ã§åŸºç‚¹ã¨å‘ãã‚’å®šã‚, ãã®å‘ãã«æ²¿ã£ã¦äº¤å·®ç‚¹ã‚’ä¸Šé“ã§è¶Šãˆã‚‹
+   å ´åˆã¯æ­£ã®ç•ªå·, ä¸‹é“ã§é€šéŽã™ã‚‹å ´åˆã¯è² ã®ç•ªå·ã¨ã™ã‚‹. äº¤å·®ç‚¹ã®ç¬¦å·ã¯
+   +1ãªã‚‰æ­£ã®ç•ªå·, -1ãªã‚‰è² ã®ç•ªå·ã‚’æŒ‡å®šã™ã‚‹.
+5. Diagramã¯ã‚¬ã‚¦ã‚¹ãƒ»ã‚³ãƒ¼ãƒ‰ã¨äº¤å·®ç‚¹æƒ…å ±ã§æ§‹æˆã•ã‚ŒãŸãƒªã‚¹ãƒˆã§ã‚ã‚‹.
+   ã“ã‚Œã‚‰ãŒæƒã†ã¨calc_Kauffman_Bracket()ã§è¨ˆç®—.
 
-6. DB¤Ësqlite3.connect()¥á¥½¥Ã¥É¤ÇÀÜÂ³¤·, ¤¢¤È¤Ïselect¤Ç¾ðÊó¤òÆþ¼ê¤¹¤ë¤À¤±.
+6. DBã«sqlite3.connect()ãƒ¡ã‚½ãƒƒãƒ‰ã§æŽ¥ç¶šã—, ã‚ã¨ã¯selectã§æƒ…å ±ã‚’å…¥æ‰‹ã™ã‚‹ã ã‘.
 
-====== ¼Â¹ÔÎã =======
+====== å®Ÿè¡Œä¾‹ =======
 sage: load("/Users/yokotahiroshi/Documents/Works/Books/Sage/kauffman_bracket.py")
 sage: import sqlite3
 sage: cursor = sqlite3.connect("My_KNOT.db")
