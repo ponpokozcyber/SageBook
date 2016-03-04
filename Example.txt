@@ -1,0 +1,61 @@
+使い方：
+実例で説明
+1. load()でkauffman_bracket.pyを読込む.
+2. import sqlite3 でsqlite3モジュールを読込む
+3. DBや表が未生成ならば表の生成を行う. その場合は以下のcursorオブジェクト
+   の生成とcreate tableで二つの表を生成し, 最後にcursor.commit()を実行して
+   おくこと.
+4. ガウス・コードと交差点での符号の情報を生成しておく. ガウス・コードは
+   絡み目の各成分で基点と向きを定め, その向きに沿って交差点を上道で越える
+   場合は正の番号, 下道で通過する場合は負の番号とする. 交差点の符号は
+   +1なら正の番号, -1なら負の番号を指定する.
+5. Diagramはガウス・コードと交差点情報で構成されたリストである.
+   これらが揃うとcalc_Kauffman_Bracket()で計算.
+
+6. DBにsqlite3.connect()メソッドで接続し, あとはselectで情報を入手するだけ.
+
+====== 実行例 =======
+sage: load("/Users/yokotahiroshi/Documents/Works/Books/Sage/kauffman_bracket.py")
+sage: import sqlite3
+sage: cursor = sqlite3.connect("My_KNOT.db")
+sage: cursor.execute("create table kauffman_bracket (Rolfsen text, crossings int, GaussCode text, StatCrossings text, polynomial text)")
+<sqlite3.Cursor object at 0x11d0c4ab0>
+sage: cursor.execute("create table diagrams (Rolfsen text, Stage int, Crossing int, Position text, GaussCodes text, StatCrossings text)")
+<sqlite3.Cursor object at 0x11d0c4a40>
+sage: cursor.commit()
+sage: EGC_Trefoil = [-1, 3, -2, 1, 3, 2]
+sage: Gauss_Codes = [[-1, 3, -2, 1, -3, 2]]
+sage: Stat_Crossings =[-1,-3,-2]
+sage: Diagram = [Gauss_Codes, Stat_Crossings]
+sage: calc_Kauffman_Bracket_DB("3_1",Diagram)
+A^7 - 1/A^3 - 1/A^5
+sage: cursor = sqlite3.connect("/Users/yokotahiroshi/My_KNOT.db")
+sage: a1 = cursor.execute("select * from diagrams where Stage=0")
+sage: a1.fetchall()
+[(u'3_1', 0, 0, u'', u'[[-1, 3, -2, 1, -3, 2]]', u'[-1, -3, -2]')]
+sage: cursor = sqlite3.connect("/Users/yokotahiroshi/My_KNOT.db")
+sage: a1 = cursor.execute("select GaussCodes, Position,StatCrossings from diagrams where Stage=2")
+sage: a1.fetchall()
+[(u'[[], [2, -2]]', u'00', u'[2]'),
+ (u'[[-2, 2]]', u'01', u'[-2]'),
+ (u'[[-2, 2]]', u'10', u'[2]'),
+ (u'[[-2, 2]]', u'11', u'[-2]')]
+sage: cursor = sqlite3.connect("/Users/yokotahiroshi/My_KNOT.db")
+sage: a1 = cursor.execute("select GaussCodes, Position,StatCrossings from diagrams where Stage=3")
+sage: a1.fetchall()
+[(u'[[], [], []]', u'000', u'[]'),
+ (u'[[], []]', u'001', u'[]'),
+ (u'[[]]', u'010', u'[]'),
+ (u'[[], []]', u'011', u'[]'),
+ (u'[[], []]', u'100', u'[]'),
+ (u'[[]]', u'101', u'[]'),
+ (u'[[]]', u'110', u'[]'),
+ (u'[[], []]', u'111', u'[]')]
+sage: a1 = cursor.execute("select * from kauffman_bracket")
+sage: a1.fetchall()
+[(u'3_1',
+  2,
+  u'[[-1, 3, -2, 1, -3, 2]]',
+  u'[-1, -3, -2]',
+  u'A^7 - 1/A^3 - 1/A^5')]
+sage: 
