@@ -105,8 +105,6 @@ HISTORY::
 
     - 19/03/2016      Version 0.1
 
-
-
 """
 
 #*****************************************************************************
@@ -121,8 +119,9 @@ HISTORY::
 
 import networkx as nx
 import matplotlib.pyplot as plt
+from sage.structure.element import FieldElement
 
-class LinkDiagram(object):
+class LinkDiagram(FieldElement):
     """
     CLASS: LinkDiagram
     *******************
@@ -166,7 +165,7 @@ class LinkDiagram(object):
             self.Components = len(self.GaussCodes)
             self.SeifertCircles = self.seifert_circles()
             
-    def __repr__(self):
+    def _repr_(self):
         """
         ABSTRACT
         ========
@@ -182,13 +181,13 @@ class LinkDiagram(object):
         scm = str(self.Components)
         return rstr %(sgc, scr, ssc, scm)
 
-    def __add__(self, other):
+    def _add_(self, other):
         """
         ABSTRACT
         ========
         
         Define the addition `+' for LinkDiagram class.
-        This addition is the connected sum for links.
+    　    This addition is the connected sum for links.
         For links, the addition is applied on the first components:
         
             x = [ L1,  L2,  ..., Ln]      (x is n components link.)
@@ -254,16 +253,7 @@ class LinkDiagram(object):
                 a = self.number_shift(1)
                 "2nd link starts bs."
                 b = other.number_shift(bs)
-                tb = b[0][-1]
-                rb = b[0][0:-1]
-                ab = abs(tb)
-                arb = map(abs, rb)
-                if ab in arb:
-                    n0 = arb.index(ab)
-                    cb = rb[n0]
-                    rb[n0] = tb
-                    tb = -cb
-                ExGaussCodes.append(a[0] + [tb] + rb)
+                ExGaussCodes.append(a[0] + b[0])
                 for i in a[1:]:
                     ExGaussCodes.append(i)
                 for i in b[1:]:
@@ -643,21 +633,21 @@ class LinkDiagram(object):
         
         obj.draw_seifert_circles(file=<file>, layout=<layout>)
         
-        obj.drawSeifert_circles(file=<file>)
+        obj.draw_seifert_circles(file=<file>)
 
-        obj.drawSeifert_circles(layout=<layout>)
+        obj.draw_seifert_circles(layout=<layout>)
 
-        obj.drawSeifert_circles()
+        obj.draw_seifert_circles()
 
         INPUT:
         ======
         
         Two arguments if needed.
         
-        file: The filename of the drawing for the Seifert System.
+        file: Default is None. The filename of the drawing for the Seifert System.
         
-        layout: The layout of nodes and edges. Supports circlar, shell
-                or spring layout. If None, circular_layout is used.
+        layout: Default is shell. The layout of nodes and edges. Supports circlar, shell
+                or spring layout. If None, shell_layout is used.
                 
         OUTPUT:
         ========
@@ -729,66 +719,52 @@ class LinkDiagram(object):
         return(G)
 
 
-def toggle_crossings(Crossings, GaussCode):
-    newCrossings = []
-    list_crossings = list(set(map(abs, GaussCode)))
-    ordr = map(abs, Crossings)
-    for i in Crossings:
-        if abs(i) in list_crossings:
-            newCrossings.append(-i)
-        else:
-            newCrossings.append(i)
-    return(newCrossings)
-
-def number2position(n, stage):
-    Position = ''
-    bg = Integer(n).digits(2)
-    m = len(bg)
-    for i in bg:
-        Position = str(i)+Position
-    for j in range(0, stage - m):
-        Position = '0' + Position
-    return(Position)
-
 def crossing_change_a(connectedDiagram):
+    """
+    ABSTRACT::
+    
+       For the crossing change TYPE-A. This crossing change occures for the connected 
+　     component only. By this crossing change, A link component are divided two components
+　　　 or one component. This splitting is occure by the combination of the Lo or Loo 
+       and +1 or -1.
+       
+    INPUT::
+    
+        - Diagram:  A list of Gauss code and Corssings.
+        
+    OUTPUT::
+    
+        - Diagrams: A list of Diagram.
+    
+    """
     [GaussCodes, Crossings] = connectedDiagram
     GaussCode = GaussCodes[0]
     n = Crossings[0]
     s = sign(n)
-    i = s * n
-    y = []
-    if len(Crossings)>1:
-        y = Crossings[1:]
-    sa = copy(y)
-    sb = copy(y)
+    i = abs(n)
+    sa = Crossings[1:]
+    sb = copy(sa)
     x = []
     p0 = GaussCode.index(-i)
     p1 = GaussCode.index(i)
+    "splitting"
     if p1>p0:
-        "splitting"
-        a1 = GaussCode[p1+1:] + GaussCode[0:p0]
-        a2 = GaussCode[p0+1:p1]  
-        "fusion"
-        x = GaussCode[p1-1:p0:-1]
-        sb = toggle_crossings(sb, x)
-        a0 = [x + a1]
+        a1 = GaussCode[p0+1:p1]  
+        a2 = GaussCode[p1+1:] + GaussCode[:p0]
     else:
-        "splitting"
-        a1 = GaussCode[p1+1:p0]
-        a2 = GaussCode[p0+1:]+GaussCode[:p1]
-        "fusion"
-        x = GaussCode[:p0:-1]
-        if p1>0:
-            x = GaussCode[p1-1::-1] + x
-        sb = toggle_crossings(sb, x)
-        a0 = [x + GaussCode[p1+1:p0]]
+        a1 = GaussCode[p0+1:] + GaussCode[:p1]
+        a2 = GaussCode[p1+1:p0]
+    "fusion"
+    x = a1[-1::-1]
+    sb = toggle_crossings(sb, x)
+    a0 = [a2 + x]
+    pa = [[a1, a2], sa]
+    ma = [a0, sb]
     if s==1:
-        pa = [[a1, a2], sa]
-        ma = [a0, sb]
+        z = [pa, ma]
     else:
-        pa = [a0, sb]
-        ma = [[a1, a2], sa]
-    return([pa, ma])
+        z = [ma, pa]
+    return(z)
 
 def crossing_change_b(disjointDiagram):
     """
@@ -800,20 +776,21 @@ def crossing_change_b(disjointDiagram):
     INPUT
     =====
     
-      Diagram: A list of Gauss code and Crossings for a diagram.
-               This Diagram is not an instance of LinkDiagram.
-               
+        - Diagram: A list of Gauss code and Crossings for a diagram.
+                   This Diagram is not an instance of LinkDiagram.
+              
+    OUTOUT::
+    
+        - A list of Diagram.
+    
     """
     [GaussCodes, Crossings] = disjointDiagram
+    z = []
     n = Crossings[0]
     s = sign(n)
-    i = s * n
-    y = []
-    z = []
-    if len(Crossings)>0:
-        y = Crossings[1:]
-    sa = copy(y)
-    sb = copy(y)
+    i = abs(n)
+    sa = Crossings[1:]
+    sb = copy(sa)
     if -i in GaussCodes[0] and i in GaussCodes[1]:
         CodeA = GaussCodes[0]
         CodeB = GaussCodes[1]
@@ -822,12 +799,11 @@ def crossing_change_b(disjointDiagram):
         CodeB = GaussCodes[0]
     p0 = CodeA.index(-i)
     p1 = CodeB.index(i)
-    pa =[[CodeB[p1+1::] + CodeB[0:p1] + CodeA[p0+1::] + CodeA[0:p0]], sa]
-    x = CodeB[:p1:-1]
-    if p1>0:
-        x = CodeB[p1-1::-1] + x
+    px = CodeB[p1+1:] + CodeB[:p1]  
+    pa =[[CodeA[0:p0] + px + CodeA[p0+1::]], sa]
+    x = px[-1::-1]
     sb = toggle_crossings(sb, x)
-    pb =[[x + CodeA[p0+1::] + CodeA[0:p0]], sb]
+    pb =[[CodeA[0:p0] + x + CodeA[p0+1::]], sb]
     if s==1:
         z = [pa, pb]
     else:
@@ -867,6 +843,109 @@ def crossing_change(Diagram):
     Diagrams = [[y[0][0] + newGaussCodes, y[0][1]],[y[1][0] + newGaussCodes, y[1][1]]]
     return(Diagrams)
 
+def toggle_crossings(Crossings, GaussCode):
+    """
+    ABSTRACT::
+    
+        This function returns a list ot new crossing points with signs after the crossing change.
+        
+    INPUT::
+    
+        - Crossings:  A list of the crossing point numbers with signs.
+        - GaussCode:  A Gauss code, a list of crossing point numbers.
+        
+    OUTPUT::
+    
+        - newCrossings: A list of the crossing numbers with signs after the crossing change.
+    """
+    newCrossings = []
+    list_crossings = list(map(abs, GaussCode))
+    ordr = map(abs, Crossings)
+    for n in Crossings:
+        i = abs(n)
+        m = n
+        if i in list_crossings:
+            if list_crossings.count(i)==1:
+                m = -n
+        newCrossings.append(m)
+    return(newCrossings)
+
+
+
+def number2position(n, stage):
+    """
+    ABSTRACT::
+    
+        This function returns the position of the link, which is produced with the crossing change.
+
+    INPUT::
+    
+        - n:      A position of the link in the Diagrams as a list.
+        - stage:  The counting of the crossing changes.
+    
+    OUTPUT::
+    
+        - Position: A string. This indicates the position of the link in whole crossing changes.
+    
+    """
+    Position = ''
+    bg = Integer(n).digits(2)
+    m = len(bg)
+    for i in bg:
+        Position = str(i)+Position
+    for j in range(0, stage - m):
+        Position = '0' + Position
+    return(Position)
+
+def kauffman_bracket(linkDiagram, KnotName=None, DB=None):
+    var('A')
+    Diagram = [linkDiagram.GaussCodes, linkDiagram.Crossings]
+    As = []
+    Fs = []
+    KBTK = []
+    Stage = 0
+    if DB is not None and KnotName is not None:
+        insert_diagrams2table(KnotName, "diagrams", Stage, int(0), [Diagram])
+    Stage = 1
+    Crossing = abs(Diagram[1][0])
+    Diagrams = crossing_change(Diagram)
+    if DB is not None and KnotName is not None:
+        insert_diagrams2table(KnotName, "diagrams", Stage, Crossing, Diagrams)
+    cps = Diagrams[0][1]
+    for i in cps:
+        Stage = Stage + 1
+        tmp = map(crossing_change, Diagrams)
+        Diagrams = []
+        for j in tmp:
+            Diagrams = Diagrams + j
+        Crossing = abs(i)
+        if DB is not None and KnotName is not None:
+            insert_diagrams2table(KnotName, "diagrams", Stage, Crossing, Diagrams)
+    for i in Diagrams:
+        j = len(i[0]) - 1
+        KBTK.append((-A**2-A**(-2))**j)
+    n = len(KBTK)
+    m = len(Integer(n-1).digits(2))
+    Polynomial = 0
+    for i in range(0,n):
+        As.append(sum(Integer(i).digits(2)))
+    for i in As:
+        Fs.append(A**(m-2*i))
+    for i in range(0,n):
+        Polynomial = Polynomial + KBTK[i]*Fs[i]
+    Polynomial = expand(Polynomial)
+    if DB is not None and KnotName is not None:
+        insert_kauffman_bracket2table(KnotName, "kauffman_bracket_polynomial", Crossing, Diagram, Polynomial)
+    return(Polynomial)
+
+
+def kauffman_bracket_polynomial(LinkDiagram, KnotName=None, DB=None):
+    var('A')
+    Polynomial = kauffman_bracket(LinkDiagram, KnotName, DB)
+    w = Integer(sum(map(sign, LinkDiagram.Crossings)))
+    return(expand((-A**3)**(-w)*Polynomial))
+
+
 def insert_diagrams2table(DBName, TableName, Rolfsen, Stage, CrossingPoint, Diagrams):
     cursor = sqlite3.connect(DBName)
     sql = "insert into " + TableName + "values (?,?,?,?,?,?)"
@@ -889,80 +968,7 @@ def insert_kauffman_bracket2table(DBName, TableName, Rolfsen, CrossingPoint, Dia
     cursor.commit()
     cursor.close()
 
-def kauffman_bracket_db(Rolfsen, linkDiagram):
-    var('A')
-    Diagram = [linkDiagram.GaussCodes, linkDiagram.Crossings]
-    As = []
-    Fs = []
-    KBTK = []
-    Stage = 0
-    insert_diagrams2table(Rolfsen, "diagrams", Stage, int(0), [Diagram])
-    Stage = 1
-    Crossing = abs(Diagram[1][0])
-    Diagrams = crossingChange(Diagram)
-    insert_diagrams2table(Rolfsen, "diagrams", Stage, Crossing, Diagrams)
-    cps = Diagrams[0][1]
-    for i in cps:
-        Stage = Stage + 1
-        tmp = map(crossing_change, Diagrams)
-        Diagrams = []
-        for j in tmp:
-            Diagrams = Diagrams + j
-        Crossing = abs(i)
-        insert_diagrams2table(Rolfsen, "diagrams", Stage, Crossing, Diagrams)
-    for i in Diagrams:
-        j = len(i[0]) - 1
-        KBTK.append((-A**2-A**(-2))**j)
-    n = len(KBTK)
-    m = len(Integer(n-1).digits(2))
-    Polynomial = 0
-    for i in range(0,n):
-        As.append(sum(Integer(i).digits(2)))
-    for i in As:
-        Fs.append(A**(m-i)*A**(-i))
-    for i in range(0,n):
-        Polynomial = Polynomial + KBTK[i]*Fs[i]
-    Polynomial = expand(Polynomial)
-    insert_kauffman_bracket2table(Rolfsen, "kauffman_bracket_polynomial", Crossing, Diagram, Polynomial)
-    return(Polynomial)
 
-def kauffman_bracket(Rolfsen, linkDiagram):
-    var('A')
-    Diagram = [linkDiagram.GaussCodes, linkDiagram.Crossings]
-    As = []
-    Fs = []
-    KBTK = []
-    Stage = 0
-    Stage = 1
-    Crossing = abs(Diagram[1][0])
-    Diagrams = crossing_change(Diagram)
-    cps = Diagrams[0][1]
-    for i in cps:
-        Stage = Stage + 1
-        tmp = map(crossing_change, Diagrams)
-        Diagrams = []
-        for j in tmp:
-            Diagrams = Diagrams + j
-        Crossing = abs(i)
-    for i in Diagrams:
-        j = len(i[0]) - 1
-        KBTK.append((-A**2-A**(-2))**j)
-    n = len(KBTK)
-    m = len(Integer(n-1).digits(2))
-    Polynomial = 0
-    for i in range(0,n):
-        As.append(sum(Integer(i).digits(2)))
-    for i in As:
-        Fs.append(A**(m-i)*A**(-i))
-    for i in range(0,n):
-        Polynomial = Polynomial + KBTK[i]*Fs[i]
-    Polynomial = expand(Polynomial)
-    return(Polynomial)
-
-def kauffman_bracket_polynomial_db(Rolfsen, Diagram):
-    Polynomial = kauffman_bracket_db(Rolfsen, Diagram)
-    w = sum(map(sign, Diagram[1]))
-    return(expand(-A^(-w)*Polynomial))
 
 
 
