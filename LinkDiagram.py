@@ -6,6 +6,7 @@ LinkDiagram
 AUTHORS:
 
 - Yokota, Hiroshi (2016-03-19): Ver. 0.1.0
+- Yokota, Hiroshi (2016-03-29): Ver. 0.2.0
 
 ABSTRACT
 ========
@@ -119,9 +120,10 @@ HISTORY::
 
 import networkx as nx
 import matplotlib.pyplot as plt
-from sage.structure.element import FieldElement
+import sqlite3
+from sage.structure.element import RingElement
 
-class LinkDiagram(FieldElement):
+class LinkDiagram(RingElement):
     """
     CLASS: LinkDiagram
     *******************
@@ -871,7 +873,6 @@ def toggle_crossings(Crossings, GaussCode):
     return(newCrossings)
 
 
-
 def number2position(n, stage):
     """
     ABSTRACT::
@@ -886,7 +887,13 @@ def number2position(n, stage):
     OUTPUT::
     
         - Position: A string. This indicates the position of the link in whole crossing changes.
+
+    EXAMPLES:
     
+        sage: number2position(0,3)
+         '000'
+        sage: number2position(3,4)
+         '0011'
     """
     Position = ''
     bg = Integer(n).digits(2)
@@ -897,21 +904,33 @@ def number2position(n, stage):
         Position = '0' + Position
     return(Position)
 
-def kauffman_bracket(linkDiagram, KnotName=None, DB=None):
+def kauffman_bracket(linkDiagram, LinkName=None, DB=None):
+    """
+    ABSTRACT::
+    
+    INPUT::
+        - linkDiagram:  An instance of LinkDiagram class.
+        - KnotName:     A name of Knot or Link
+        - DB:           A Data Base SQLite3
+    
+    OUTPUT::
+    
+    
+    """
     var('A')
-    Diagram = [linkDiagram.GaussCodes, linkDiagram.Crossings]
+    Diagrams = [[linkDiagram.GaussCodes, linkDiagram.Crossings]]
+    oDiagrams = Diagrams[0]
+    dtable = "diagrams"
+    kbptable = "kauffman_bracket_table"
     As = []
     Fs = []
     KBTK = []
     Stage = 0
-    if DB is not None and KnotName is not None:
-        insert_diagrams2table(KnotName, "diagrams", Stage, int(0), [Diagram])
-    Stage = 1
-    Crossing = abs(Diagram[1][0])
-    Diagrams = crossing_change(Diagram)
-    if DB is not None and KnotName is not None:
-        insert_diagrams2table(KnotName, "diagrams", Stage, Crossing, Diagrams)
-    cps = Diagrams[0][1]
+    if DB is not None and LinkName is not None:
+        connect_db(DB,[[dtable, "LinkName text", "Stage int",  "Position text",
+                        "GaussCodes text", "Crossings text"]])
+        insert_diagrams2table(DB,dtable, LinkName, Stage, Diagrams)
+    cps = linkDiagram.Crossings
     for i in cps:
         Stage = Stage + 1
         tmp = map(crossing_change, Diagrams)
@@ -919,8 +938,8 @@ def kauffman_bracket(linkDiagram, KnotName=None, DB=None):
         for j in tmp:
             Diagrams = Diagrams + j
         Crossing = abs(i)
-        if DB is not None and KnotName is not None:
-            insert_diagrams2table(KnotName, "diagrams", Stage, Crossing, Diagrams)
+        if DB is not None and LinkName is not None:
+            insert_diagrams2table(DB, dtable, LinkName, Stage, Diagrams)
     for i in Diagrams:
         j = len(i[0]) - 1
         KBTK.append((-A**2-A**(-2))**j)
@@ -934,42 +953,167 @@ def kauffman_bracket(linkDiagram, KnotName=None, DB=None):
     for i in range(0,n):
         Polynomial = Polynomial + KBTK[i]*Fs[i]
     Polynomial = expand(Polynomial)
-    if DB is not None and KnotName is not None:
-        insert_kauffman_bracket2table(KnotName, "kauffman_bracket_polynomial", Crossing, Diagram, Polynomial)
+    if DB is not None and LinkName is not None:
+        connect_db(DB,[[kbptable, "LinkName text", "CrossingNumber int", 
+                        "GaussCodes text", "Crossings text", "Polynomial text"]])
+        insert_kauffman_bracket2table(DB, kbptable, LinkName, oDiagrams, Polynomial)
     return(Polynomial)
 
 
-def kauffman_bracket_polynomial(LinkDiagram, KnotName=None, DB=None):
+def kauffman_bracket_polynomial(LinkDiagram, LinkName=None, DB=None):
     var('A')
-    Polynomial = kauffman_bracket(LinkDiagram, KnotName, DB)
+    Polynomial = kauffman_bracket(LinkDiagram, LinkName, DB)
     w = Integer(sum(map(sign, LinkDiagram.Crossings)))
-    return(expand((-A**3)**(-w)*Polynomial))
+    return(expand((-A^3)^(-w)*Polynomial))
 
 
-def insert_diagrams2table(DBName, TableName, Rolfsen, Stage, CrossingPoint, Diagrams):
+def insert_diagrams2table(DBName, TableName, LinkName, Stage, Diagrams):
     cursor = sqlite3.connect(DBName)
-    sql = "insert into " + TableName + "values (?,?,?,?,?,?)"
+    sql = "insert into " + TableName + " values (?, ?, ?, ?, ?)"
     m = 0
     for i in Diagrams:
         Position = number2position(m, Stage)
         m = m + 1 
         GaussCodes = str(i[0])
         Crossings = str(i[1])
-        cursor.execute(sql,(Rolfsen, int(Stage), int(CrossingPoint), Position, GaussCodes, Crossings))
+        cursor.execute(sql,(LinkName, int(Stage), Position, GaussCodes, Crossings))
     cursor.commit()
     cursor.close()
     
-def insert_kauffman_bracket2table(DBName, TableName, Rolfsen, CrossingPoint, Diagram, Polynomial):
+def insert_kauffman_bracket2table(DBName, TableName, LinkName, Diagrams, Polynomial):
     cursor = sqlite3.connect(DBName)
-    sql = "insert into " + TableName + " values (?,?,?,?,?)",
-    GaussCode = str(Diagram[0])
-    Crossings = str(Diagram[1])
-    cursor.execute(sql, (Rolfsen, int(CrossingPoint), GaussCode, Crossings, str(Polynomial))) 
+    sql = "insert into " + TableName + " values (?,?,?,?,?)"
+    GaussCodes = str(Diagrams[0])
+    Crossings = str(Diagrams[1])
+    CrossingNumber = int(len(Diagrams[1]))
+    KBP = str(Polynomial)
+    cursor.execute(sql, (LinkName, CrossingNumber, GaussCodes, Crossings, KBP)) 
     cursor.commit()
     cursor.close()
 
+def connect_db(DB, tables):
+    if len(tables)>0:
+        cursor = sqlite3.connect(DB)
+        csr1 = cursor.execute("SELECT * FROM sqlite_master WHERE TYPE=='table'")
+        ans = flatten(csr1.fetchall())
+        for i in tables:
+            tname = unicode(i[0])
+            if not(tname in ans) and len(i)>2:
+                sql0 = "CREATE TABLE " + tname + " "
+                sql1 = "(" + unicode(i[1])
+                for k in i[2:]:
+                    sql1 = sql1 + "," + unicode(k)
+                sql1 = sql1 + ")"
+                cursor.execute(sql0 + sql1)
+        cursor.commit()
+        return(1)
+    else:
+        return(0)
 
 
+def check_plusOnly(list_0):
+    if True in map(lambda(x):x<0,list_0):
+        return(False)
+    else:
+        return(True)
+
+def Generators(ExGaussCode):
+    list_crossings = list(set(map(lambda(x):abs(x),ExGaussCode)))
+    n = len(list_crossings)
+    gns = ""
+    for i in list_crossings:
+        if gns=="":
+            gns = "a_" + str(i)
+        else:
+            gns = gns + ", a_" + str(i)
+    return([gns, list_crossings])
+
+def GaussCode(ExGaussCode, list_crossings):
+    gauss_code = []
+    sign_crossings = []
+    for x in ExGaussCode:
+        i = abs(x)
+        sgnx = 2*(x>0)-1
+        if i in list_crossings:
+            list_crossings.remove(i)
+            gauss_code.append(x)
+        else:
+            if x in gauss_code:
+                gauss_code.append(-x)
+                sign_crossings.append([i,sgnx])
+            else:
+                if -x in gauss_code:
+                    sign_crossings.append([i,sgnx])
+                    gauss_code.append(x)
+    return([gauss_code, sign_crossings])
+
+def RelatorCode(gauss_code, sign_crossings):
+    list_relatorCode = []
+    for x in sign_crossings:
+        upth = 0
+        [i, s] = x
+        rel = []
+        n = len(gauss_code)
+        "Set a_i"
+        p0 = gauss_code.index(-i)
+        p1 = gauss_code.index(i)
+        "Set a range to find a_j, next of a_i"
+        gcx = gauss_code[p0+1:n]
+        "Extends the range of Gauss code to be cyclic"
+        if check_plusOnly(gcx):
+            gcx = gcx + gauss_code
+        "searching a_j"
+        for j in gcx:
+            if j<0 and rel==[]:
+                rel = [i, -j]
+        "Search a upper path"
+        if p1==n:
+            gcx =gauss_code
+        else:
+            gcx = gauss_code[p1+1:n]
+            "Extends Gauss code to be cyclic"
+            if check_plusOnly(gcx):
+                gcx = gcx + gauss_code
+            for k in gcx:
+                if k<0 and upth==0:
+                    rel.append(-k)
+                    rel.append(s)
+                    upth = 1
+        list_relatorCode.append(rel)
+    return(list_relatorCode)
+def representation_KnotGroup(generators,list_relatorCode):
+    relators = []
+    "generates a free group F"
+    F = FreeGroup(generators)
+    "generates relators from relatorCode"
+    for x in list_relatorCode[0:-1]:
+        sgn = x[-1]
+        i = x[0]
+        j = x[1]
+        k = x[-2]
+        if sgn>0:
+            relators.append(F([k,i,-k,-j]))
+        else:
+            relators.append(F([i,k,-j,-k]))
+    return(F/relators)
+
+def KnotGroup(ExGaussCode):
+    list_crossings = []
+    sign_crossings = []
+    gauss_code = []
+    list_relatorCode = []
+    relators = []
+    "Define generators"
+    [gns, list_crossings] = Generators(ExGaussCode)
+    "Generate a free group F"
+    F = FreeGroup(gns)
+    "Redefine Gauss code and a list at each crossings"
+    [gauss_code, sign_crossings] = GaussCode(ExGaussCode,list_crossings)
+    "Get relatorCode of each crossings"
+    list_relatorCode = RelatorCode(gauss_code, sign_crossings)
+    "calculate the knot group"
+    G = representation_KnotGroup(gns,list_relatorCode)
+    return(gauss_code,sign_crossings,G)
 
 
 
