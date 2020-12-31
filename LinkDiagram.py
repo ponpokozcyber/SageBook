@@ -189,7 +189,7 @@ class LinkDiagram(RingElement):
         ========
         
         Define the addition `+' for LinkDiagram class.
-    　    This addition is the connected sum for links.
+    臓臓    This addition is the connected sum for links.
         For links, the addition is applied on the first components:
         
             x = [ L1,  L2,  ..., Ln]      (x is n components link.)
@@ -430,14 +430,14 @@ class LinkDiagram(RingElement):
          Components: 2
         
         sage: md20 = d2.mirror_iomage(0)
-        sage: print md20
+        sage: print(md20)
          GaussCodes:[[1, -3, 2, -1, 3, -4, 5, -2], [4, -5, -6, 6]]
          Crossings:[-1, -3, -2, -4, -5, -6]
          SeifertCircles:[[-6, -4, -5], [-6], [-4, -5, -2, -1, -3], [-1, -3, -2]]
          Components: 2
          
         sage: md21 = d2.mirror_image(1)
-        sage: print md21
+        sage: print(md21)
          GaussCodes:[[-1, 3, -2, 1, -3, -4, 5, 2], [4, -5, 6, -6]]
          Crossings:[1, 3, 2, -4, -5, 6]
          SeifertCircles:[[6], [-4, -5, 6], [-4, -5, 2, 1, 3], [3, 2, 1]]
@@ -453,7 +453,7 @@ class LinkDiagram(RingElement):
             xcrssngs = map(lambda(x):abs(x), xgausscode)
             crssngs = list(set(xcrssngs))
             cnt = map(lambda(z): xcrssngs.count(z)==1, crssngs)
-            w = range(0,len(cnt))
+            w = range(len(cnt))
             if sum(cnt)>0:
                 crps = list(set(map(lambda(z):cnt[z]*crssngs[z],w)))
                 for x in self.ExGaussCodes[0:n]:
@@ -726,8 +726,8 @@ def crossing_change_a(connectedDiagram):
     ABSTRACT::
     
        For the crossing change TYPE-A. This crossing change occures for the connected 
-　     component only. By this crossing change, A link component are divided two components
-　　　 or one component. This splitting is occure by the combination of the Lo or Loo 
+       component only. By this crossing change, A link component are divided two components
+       or one component. This splitting is occure by the combination of the Lo or Loo 
        and +1 or -1.
        
     INPUT::
@@ -840,7 +840,7 @@ def crossing_change(Diagram):
                 y = crossing_change_a([[x], Crossings])
             else:
                 cpl.append(x)
-    if len(cpl)>0:
+    if cpl:
         y = crossing_change_b([cpl, Crossings])
     Diagrams = [[y[0][0] + newGaussCodes, y[0][1]],[y[1][0] + newGaussCodes, y[1][1]]]
     return(Diagrams)
@@ -900,7 +900,7 @@ def number2position(n, stage):
     m = len(bg)
     for i in bg:
         Position = str(i)+Position
-    for j in range(0, stage - m):
+    for j in range(stage - m):
         Position = '0' + Position
     return(Position)
 
